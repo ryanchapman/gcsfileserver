@@ -1,4 +1,4 @@
- runtime: go113
+ runtime: go111
  automatic_scaling:
    min_idle_instances: 1
    max_pending_latency: 1s 
@@ -8,4 +8,4 @@
    script: auto
  
  env_variables:
-   BUCKET: "onx-qa.appspot.com"
+   BUCKET: "onx-cypress-results"

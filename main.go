@@ -111,7 +111,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if s.DirListPageSize == 0 {
 		s.DirListPageSize = DEFAULT_DIRLIST_PAGE_SIZE
 	}
-	ctx, cancel := context.WithTimeout(appengine.NewContext(r), 10*time.Second)
+	ctx, cancel := context.WithTimeout(appengine.NewContext(r), 1*time.Second)
 	defer cancel()
 
 	gcsClient := gcsClient(ctx, w)
