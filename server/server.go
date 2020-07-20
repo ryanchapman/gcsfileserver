@@ -1,4 +1,4 @@
-package gcsfileserver
+//package gcsfileserver/server
 
 import (
 	"context"
