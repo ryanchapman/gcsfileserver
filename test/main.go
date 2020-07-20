@@ -1,10 +1,11 @@
 package main
 
 import (
-	"../server"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/srlightbody/gcsfileserver/server"
 )
 
 func main() {
