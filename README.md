@@ -11,6 +11,7 @@ Then Google Cloud Storage File Server may be for you.
 - GCS files are read-only through gcsfileserver
 
 Caveat: not intended for very high request rates.  That use case would require implementing caching of some objects to reduce the network round trips to GCS.
+**Note:** This relies on Go 1.11. If you want to use a newer version of Go, you need to pull out all the appengine library usage and replace it with the libraries Google AppEngine supports for Go 1.12+ - https://cloud.google.com/appengine/docs/standard/go/go-differences
 
 ## Setup
 
@@ -18,13 +19,12 @@ Caveat: not intended for very high request rates.  That use case would require i
 2. Optional, set up custom domain in App Engine > Settings.  This gets you free SSL to a custom domain name.
 3. Create a app.yaml and specify the GCS bucket you want to serve files from:
 
-        runtime: go
-        api_version: go1
+        runtime: go111
         
         
         handlers:
         - url: /.*
-          script: _go_app
+          script: auto
         
         env_variables:
           BUCKET: "rchapman.appspot.com"
