@@ -1,4 +1,4 @@
-//package gcsfileserver/server
+package server
 
 import (
 	"context"
@@ -248,7 +248,7 @@ var PAGE_TEMPLATE = `
       {{- range $key, $value := .DirEntries -}}
         {{- if ne $value.Name "" -}}
           {{- /* exclude faux directory entries that come in as files. For example,
-                 if you have /folder1/test.txt, you'll end up with: $value.Name="folder1/", 
+                 if you have /folder1/test.txt, you'll end up with: $value.Name="folder1/",
                  $value.Name="folder1/test.txt" */ -}}
           {{- if not (hasSuffix $value.Name "/") -}}
             <tr>
