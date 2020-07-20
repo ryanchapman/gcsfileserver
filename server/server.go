@@ -1,10 +1,11 @@
-package gcsfileserver
+package server
 
 import (
 	"context"
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -12,8 +13,6 @@ import (
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/iterator"
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/log"
 )
 
 const DEFAULT_DIRLIST_PAGE_SIZE = 100
@@ -42,7 +41,7 @@ func gcsClient(ctx context.Context, w http.ResponseWriter) *storage.Client {
 	gcsClient, err := storage.NewClient(ctx)
 	if err != nil || gcsClient == nil {
 		msg := fmt.Sprintf("Could not initialize GCS client: %v", err)
-		log.Errorf(ctx, msg)
+		log.Print(msg)
 		http.Error(w, msg, http.StatusInternalServerError)
 		return nil
 	}
@@ -53,7 +52,7 @@ func gcsBucketHandle(ctx context.Context, w http.ResponseWriter, gcsClient *stor
 	bucketName := os.Getenv("BUCKET")
 	if bucketName == "" {
 		msg := fmt.Sprintf("Bucket name must be specified in environment variable BUCKET. Got BUCKET=%s", bucketName)
-		log.Errorf(ctx, msg)
+		log.Print(msg)
 		http.Error(w, msg, http.StatusInternalServerError)
 		return nil
 	}
@@ -103,7 +102,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if s.DirListPageSize == 0 {
 		s.DirListPageSize = DEFAULT_DIRLIST_PAGE_SIZE
 	}
-	ctx, cancel := context.WithTimeout(appengine.NewContext(r), 10*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
 	defer cancel()
 
 	gcsClient := gcsClient(ctx, w)
@@ -140,7 +139,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	objReader, err := objHandle.NewReader(ctx)
 	if err != nil {
 		msg := fmt.Sprintf("Could not create objReader: %v", err)
-		log.Errorf(ctx, msg)
+		log.Print(msg)
 		http.Error(w, msg, http.StatusInternalServerError)
 		return
 	}
@@ -162,7 +161,7 @@ func (s *Server) dirList(ctx context.Context, w http.ResponseWriter, r *http.Req
 	}).Parse(PAGE_TEMPLATE)
 	if err != nil {
 		msg := fmt.Sprintf("Could not parse template: %v", err)
-		log.Errorf(ctx, msg)
+		log.Print(msg)
 		http.Error(w, msg, http.StatusInternalServerError)
 		return
 	}
@@ -181,7 +180,7 @@ func (s *Server) dirList(ctx context.Context, w http.ResponseWriter, r *http.Req
 	nextPageToken, err := iterator.NewPager(objectIterator, s.DirListPageSize, pageToken).NextPage(&dirEntries)
 	if err != nil {
 		msg := fmt.Sprintf("Could not get next page of dir entries: %v", err)
-		log.Errorf(ctx, msg)
+		log.Print(msg)
 		http.Error(w, msg, http.StatusInternalServerError)
 		return
 	}
@@ -202,7 +201,7 @@ func (s *Server) dirList(ctx context.Context, w http.ResponseWriter, r *http.Req
 	err = tmpl.Execute(w, templateVars)
 	if err != nil {
 		msg := fmt.Sprintf("Could not execute template: %v", err)
-		log.Errorf(ctx, msg)
+		log.Print(msg)
 		http.Error(w, msg, http.StatusInternalServerError)
 		return
 	}
@@ -248,7 +247,7 @@ var PAGE_TEMPLATE = `
       {{- range $key, $value := .DirEntries -}}
         {{- if ne $value.Name "" -}}
           {{- /* exclude faux directory entries that come in as files. For example,
-                 if you have /folder1/test.txt, you'll end up with: $value.Name="folder1/", 
+                 if you have /folder1/test.txt, you'll end up with: $value.Name="folder1/",
                  $value.Name="folder1/test.txt" */ -}}
           {{- if not (hasSuffix $value.Name "/") -}}
             <tr>

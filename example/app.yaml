@@ -1,0 +1,12 @@
+ runtime: go114
+ main: ./
+ automatic_scaling:
+   min_idle_instances: 1
+   max_pending_latency: 1s 
+ 
+ handlers:
+ - url: /.*
+   script: auto
+ 
+ env_variables:
+   BUCKET: "onx-cypress-results"
