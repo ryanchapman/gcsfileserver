@@ -18,7 +18,7 @@ func main() {
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
-	s := server.Server{
+	s := gcsfileserver.server.Server{
 		DirListPageSize: 100,
 	}
 	http.Handle("/", &s)
