@@ -12,13 +12,11 @@ Then Google Cloud Storage File Server may be for you.
 
 **Caveat:** not intended for very high request rates.  That use case would require implementing caching of some objects to reduce the network round trips to GCS.
 
-**Note:** This relies on Go 1.11. If you want to use a newer version of Go, you need to pull out all the appengine library usage and replace it with the libraries Google AppEngine supports for Go 1.12+ - https://cloud.google.com/appengine/docs/standard/go/go-differences
-
 ## Setup
 
 1. Set up IAP
 2. Optional, set up custom domain in App Engine > Settings.  This gets you free SSL to a custom domain name.
-3. Create a app.yaml and specify the GCS bucket you want to serve files from:
+3. In the root of your repository create an app.yaml and specify the GCS bucket you want to serve files from:
 ```yaml
 runtime: go114
 main: ./
@@ -61,6 +59,7 @@ func main() {
 }
 ```
 
-8. Run go get ./... from the root of the project
-9. Deploy the app with `gcloud app deploy --project=YOUR_GCP_PROJECT` (for example `gcloud app deploy --project=rchapman`)
-10. Open web browser with `gcloud app browse --project=YOUR_GCP_PROJECT`
+8. Run `go get ./...` from the root of the project
+9. Run `go mod init github.com/rchapman/gcsfileserver` from the root of the project.
+10. Deploy the app with `gcloud app deploy --project=YOUR_GCP_PROJECT` (for example `gcloud app deploy --project=rchapman`)
+11. Open web browser with `gcloud app browse --project=YOUR_GCP_PROJECT`

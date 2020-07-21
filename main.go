@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/srlightbody/gcsfileserver/server"
+	"github.com/rchapman/gcsfileserver/server"
 )
 
 func main() {
