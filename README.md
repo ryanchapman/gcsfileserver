@@ -59,7 +59,6 @@ func main() {
 }
 ```
 
-8. Run `go get ./...` from the root of the project
-9. Run `go mod init github.com/rchapman/gcsfileserver` from the root of the project.
-10. Deploy the app with `gcloud app deploy --project=YOUR_GCP_PROJECT` (for example `gcloud app deploy --project=rchapman`)
-11. Open web browser with `gcloud app browse --project=YOUR_GCP_PROJECT`
+8. Run `go mod init github.com/rchapman/gcsfileserver` from the root of the project.
+9. Deploy the app with `gcloud app deploy --project=YOUR_GCP_PROJECT` (for example `gcloud app deploy --project=rchapman`)
+10. Open web browser with `gcloud app browse --project=YOUR_GCP_PROJECT`
