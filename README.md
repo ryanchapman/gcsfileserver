@@ -10,47 +10,54 @@ Then Google Cloud Storage File Server may be for you.
 - Your GCS bucket is not open to the public
 - GCS files are read-only through gcsfileserver
 
-Caveat: not intended for very high request rates.  That use case would require implementing caching of some objects to reduce the network round trips to GCS.
-
-**Note:** This relies on Go 1.11. If you want to use a newer version of Go, you need to pull out all the appengine library usage and replace it with the libraries Google AppEngine supports for Go 1.12+ - https://cloud.google.com/appengine/docs/standard/go/go-differences
+**Caveat:** not intended for very high request rates.  That use case would require implementing caching of some objects to reduce the network round trips to GCS.
 
 ## Setup
 
 1. Set up IAP
 2. Optional, set up custom domain in App Engine > Settings.  This gets you free SSL to a custom domain name.
 3. Create a app.yaml and specify the GCS bucket you want to serve files from:
+```yaml
+runtime: go114
+main: ./
 
-        runtime: go111
-        
-        
-        handlers:
-        - url: /.*
-          script: auto
-        
-        env_variables:
-          BUCKET: "rchapman.appspot.com"
+handlers:
+- url: /.*
+  script: auto
+
+env_variables:
+  BUCKET: "rchapman.appspot.com"
+```
 4. Make sure your bucket is created and is not publicly accessible.
 5. Find your app engine service account in Google Cloud Console > IAM
    For this example, I'll use mine, rchapman@appspot.gserviceaccount.com
 6. In the Google Cloud Console, go to your GCS bucket and give your app engine service account (rchapman@appspot.gserviceaccount.com in the previous example) the roles "Storage Object Viewer" and "Storage Legacy Bucket Reader"
 7. Create main.go in the same directory as your app.yaml file:
+```go
+package main
 
-        package main
-        
-        import (
-            "net/http"
-        
-            "github.com/ryanchapman/gcsfileserver"
-            "google.golang.org/appengine"
-        )
-        
-        func main() {
-            s := gcsfileserver.Server{
-        	        DirListPageSize: 100,
-            }
-            http.Handle("/", &s)
-            appengine.Main()
-        }
+import (
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/rchapman/gcsfileserver/server"
+)
+
+func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	s := server.Server{
+		DirListPageSize: 100,
+	}
+	http.Handle("/", &s)
+
+	log.Fatal(http.ListenAndServe(":"+port, nil))
+
+}
+```
 
 8. Run go get ./... from the root of the project
 9. Deploy the app with `gcloud app deploy --project=YOUR_GCP_PROJECT` (for example `gcloud app deploy --project=rchapman`)
