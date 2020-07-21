@@ -12,6 +12,8 @@ Then Google Cloud Storage File Server may be for you.
 
 **Caveat:** not intended for very high request rates.  That use case would require implementing caching of some objects to reduce the network round trips to GCS.
 
+**Note:** This relies on Go 1.11. If you want to use a newer version of Go, you need to pull out all the appengine library usage and replace it with the libraries Google AppEngine supports for Go 1.12+ - https://cloud.google.com/appengine/docs/standard/go/go-differences
+
 ## Setup
 
 1. Set up IAP
@@ -20,7 +22,6 @@ Then Google Cloud Storage File Server may be for you.
 ```yaml
 runtime: go114
 main: ./
-
 handlers:
 - url: /.*
   script: auto
@@ -28,6 +29,7 @@ handlers:
 env_variables:
   BUCKET: "rchapman.appspot.com"
 ```
+
 4. Make sure your bucket is created and is not publicly accessible.
 5. Find your app engine service account in Google Cloud Console > IAM
    For this example, I'll use mine, rchapman@appspot.gserviceaccount.com
